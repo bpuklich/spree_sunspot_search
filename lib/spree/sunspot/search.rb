@@ -71,6 +71,8 @@ module Spree
         @solr_search = ::Sunspot.new_search(Spree::Product) do |q|
           q.keywords(query)
 
+          q.with(:taxon_ids, taxon.id) unless taxon.blank?
+
           order(q, ordering_property)
           # Use a high per_page here so that all results are retrieved when setting base_scope at the end of this method.
           # Otherwise you'll never have more than the first page of results from here returned, when pagination is done

@@ -20,7 +20,7 @@
                 <% count = solr_rows.find{|r| r.value == hv[:orig_value]}.try(:count) || 0 %>
                 <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
                   <%= check_box_tag "s[#{filter.search_param}][]", hv[:value], selected, { :id => checkbox_id } %>
-                  <%= "#{hv[:display]} <!--<span class='count'>(#{count})</span>-->".html_safe %>
+                  <%= "#{hv[:display]} <span class='count'>(#{count})</span>".html_safe %>
                 </label>
               </li>
             <% end %>

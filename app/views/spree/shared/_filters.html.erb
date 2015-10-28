@@ -7,28 +7,48 @@
       <% if lookup_context.find_all("spree/filters/_#{filter.search_param}").any? %>
         <%= render :partial => "spree/filters/#{filter.search_param}", :locals => { :filter => filter }%>
       <% else %>
-        <% next unless filter.display? %>
-        <div class="navigation" data-field="<%= filter.search_param %>">
-          <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
-          <ul class="filter_choices list-group">
-            <% solr_search = @searcher.solr_search %>
-            <% solr_rows = solr_search.facet(filter.search_param).rows %>
-            <% filter.html_values.each_with_index do |hv, index| %>
-              <li class="list-group-item">
-                <% selected = params[:s][filter.search_param].include? hv[:value].to_s if params[:s] and params[:s][filter.search_param].present? %>
-                <% checkbox_id = "#{filter.search_param}_#{hv[:value]}" %>
-                <% count = solr_rows.find{|r| r.value == hv[:orig_value]}.try(:count) || 0 %>
-                <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
-                  <%= check_box_tag "s[#{filter.search_param}][]", hv[:value], selected, { :id => checkbox_id } %>
-                  <%= "#{hv[:display]} <span class='count'>(#{count})</span>".html_safe %>
-                </label>
-              </li>
-            <% end %>
-          </ul>
-        </div>
+        <% if @searcher.solr_search.facet(filter.search_param).class == Sunspot::Search::FieldFacet %>
+          <% next if @searcher.solr_search.facet(filter.search_param).rows.empty? %>
+          <div class="navigation" data-field="<%= filter.search_param %>">
+              <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
+              <ul class="filter_choices list-group">
+                  <% @searcher.solr_search.facet(filter.search_param).rows.each do |row| %>
+                    <li class="list-group-item">
+                        <% selected = params[:s][filter.search_param].include? row.value.to_s if params[:s] and params[:s][filter.search_param].present? %>
+                        <% checkbox_id = "#{filter.search_param}_#{row.value}" %>
+                        <% count = row.try(:count) || 0 %>
+                        <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
+                            <%= check_box_tag "s[#{filter.search_param}][]", row.value, selected, { :id => checkbox_id } %>
+                            <%= "#{row.instance.try(:name) || row.value} <span class='count'>(#{count})</span>".html_safe %>
+                        </label>
+                    </li>
+                  <% end %>
+              </ul>
+          </div>
+        <% else %>
+          <% next unless filter.display? %>
+          <div class="navigation" data-field="<%= filter.search_param %>">
+            <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
+            <ul class="filter_choices list-group">
+              <% solr_search = @searcher.solr_search %>
+              <% solr_rows = solr_search.facet(filter.search_param).rows %>
+              <% filter.html_values.each_with_index do |hv, index| %>
+                <li class="list-group-item">
+                  <% selected = params[:s][filter.search_param].include? hv[:value].to_s if params[:s] and params[:s][filter.search_param].present? %>
+                  <% checkbox_id = "#{filter.search_param}_#{hv[:value]}" %>
+                  <% count = solr_rows.find{|r| r.value == hv[:orig_value]}.try(:count) || 0 %>
+                  <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
+                    <%= check_box_tag "s[#{filter.search_param}][]", hv[:value], selected, { :id => checkbox_id } %>
+                    <%= "#{hv[:display]} <span class='count'>(#{count})</span>".html_safe %>
+                  </label>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
     <%= submit_tag Spree.t(:search), :class => 'btn btn-primary' %>
     <%= link_to Spree.t(:clear_all), "javascript: $('.filter_choices input').attr('checked', false);", :class => 'filter_clear_all btn btn-default' %>
-<% end %>
+  <% end %>
 <% end %>

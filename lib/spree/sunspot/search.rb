@@ -116,7 +116,11 @@ module Spree
             query.facet(filter.search_param) do
               filter.values.each do |value|
                 row(value) do
-                  with(filter.search_param, value)
+                  if value.last == 0
+                    with(filter.search_param).greater_than(value.first)
+                  else
+                    with(filter.search_param, value)
+                  end
                 end
               end
             end

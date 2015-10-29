@@ -9,7 +9,7 @@
       <% else %>
         <% if @searcher.solr_search.facet(filter.search_param).class == Sunspot::Search::FieldFacet %>
           <% next if @searcher.solr_search.facet(filter.search_param).rows.empty? %>
-          <div class="navigation" data-field="<%= filter.search_param %>">
+          <nav class="sidebar-item" data-field="<%= filter.search_param %>">
               <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
               <ul class="filter_choices list-group">
                   <% @searcher.solr_search.facet(filter.search_param).rows.sort{|a,b| a.value.downcase <=> b.value.downcase}.each do |row| %>
@@ -17,17 +17,18 @@
                         <% selected = params[:s][filter.search_param].include? row.value.to_s if params[:s] and params[:s][filter.search_param].present? %>
                         <% checkbox_id = "#{filter.search_param}_#{row.value}" %>
                         <% count = row.try(:count) || 0 %>
+                        <span class='badge'><%= count %></span>
                         <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
                             <%= check_box_tag "s[#{filter.search_param}][]", row.value, selected, { :id => checkbox_id } %>
-                            <%= "#{row.instance.try(:name) || row.value} <span class='count'>(#{count})</span>".html_safe %>
+                            <%= "#{row.instance.try(:name) || row.value}".html_safe %>
                         </label>
                     </li>
                   <% end %>
               </ul>
-          </div>
+          </nav>
         <% else %>
           <% next unless filter.display? %>
-          <div class="navigation" data-field="<%= filter.search_param %>">
+          <nav class="sidebar-item" data-field="<%= filter.search_param %>">
             <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
             <ul class="filter_choices list-group">
               <% solr_search = @searcher.solr_search %>
@@ -37,14 +38,15 @@
                   <% selected = params[:s][filter.search_param].include? hv[:value].to_s if params[:s] and params[:s][filter.search_param].present? %>
                   <% checkbox_id = "#{filter.search_param}_#{hv[:value]}" %>
                   <% count = solr_rows.find{|r| r.value == hv[:orig_value]}.try(:count) || 0 %>
+                  <span class='badge'><%= count %></span>
                   <label class="filter_field <%= count > 0 ? 'nonzero' : 'zero' %>" for="<%= checkbox_id %>">
                     <%= check_box_tag "s[#{filter.search_param}][]", hv[:value], selected, { :id => checkbox_id } %>
-                    <%= "#{hv[:display]} <span class='count'>(#{count})</span>".html_safe %>
+                    <%= "#{hv[:display]}".html_safe %>
                   </label>
                 </li>
               <% end %>
             </ul>
-          </div>
+          </nav>
         <% end %>
       <% end %>
     <% end %>

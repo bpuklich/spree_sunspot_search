@@ -3,7 +3,7 @@
 %>
 <% unless Spree::Sunspot::Setup.query_filters.filters.empty? %>
   <%= form_tag url_options, :method => :get, :id => "sidebar_products_search" do %>
-    <% Spree::Sunspot::Setup.query_filters.filters.each do |filter| %>
+    <% Spree::Sunspot::Setup.query_filters.filters.reject{|f| not f.show_in_sidebar}.each do |filter| %>
       <% if lookup_context.find_all("spree/filters/_#{filter.search_param}").any? %>
         <%= render :partial => "spree/filters/#{filter.search_param}", :locals => { :filter => filter }%>
       <% else %>
@@ -12,7 +12,7 @@
           <nav class="sidebar-item" data-field="<%= filter.search_param %>">
               <h4 class="filter-title"><%= Spree.t :shop_by_taxonomy, :taxonomy => filter.display_name %></h4>
               <ul class="filter_choices list-group">
-                  <% @searcher.solr_search.facet(filter.search_param).rows.sort{|a,b| a.value.downcase <=> b.value.downcase}.each do |row| %>
+                  <% @searcher.solr_search.facet(filter.search_param).rows.sort{|a,b| a.value.to_s.downcase <=> b.value.to_s.downcase}.each do |row| %>
                     <li class="list-group-item">
                         <% selected = params[:s][filter.search_param].include? row.value.to_s if params[:s] and params[:s][filter.search_param].present? %>
                         <% checkbox_id = "#{filter.search_param}_#{row.value}" %>

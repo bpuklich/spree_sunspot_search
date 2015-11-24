@@ -11,9 +11,11 @@ module Spree
         attr_accessor :search_condition
         attr_accessor :search_param
         attr_accessor :values
+        attr_accessor :show_in_sidebar
 
         def initialize
           @values = []
+          @show_in_sidebar = true
         end
 
         def values(&blk)

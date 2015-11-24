@@ -2,7 +2,7 @@
 # Any fields you wish to add text or attribute indexes for should be defined here.
 # See the Sunspot README for more info: https://github.com/sunspot/sunspot
 Spree::Sunspot::Setup.configure do
-  searchable :auto_index => true, :auto_remove => true do
+  searchable :auto_index => true, :auto_remove => true, :unless => :deleted? do
     text :name, :boost => 2.0
     text :description, :boost => 1.2
     time :available_on

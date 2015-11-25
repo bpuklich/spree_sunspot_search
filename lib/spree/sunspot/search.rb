@@ -112,8 +112,11 @@ module Spree
 
       def build_facet_query(query)
         Setup.query_filters.filters.each do |filter|
+          options = {}
+          options[:limit] = filter.facet_limit if filter.facet_limit
+          options[:sort] = filter.facet_sort if filter.facet_sort
           if filter.values.any? && filter.values.first.is_a?(Range)
-            query.facet(filter.search_param) do
+            query.facet(filter.search_param, options) do
               filter.values.each do |value|
                 row(value) do
                   if value.last == 0
@@ -125,10 +128,8 @@ module Spree
               end
             end
           else
-            query.facet(
-                filter.search_param,
-                exclude: property_exclusion( filter.exclusion )
-            )
+            options[:exclude] = property_exclusion( filter.exclusion )
+            query.facet(filter.search_param, options)
           end
           # Temporary hack to allow for geodistancing
           unless @properties[:location_coords].nil?

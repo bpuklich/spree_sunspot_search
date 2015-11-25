@@ -12,6 +12,8 @@ module Spree
         attr_accessor :search_param
         attr_accessor :values
         attr_accessor :show_in_sidebar
+        attr_accessor :facet_limit
+        attr_accessor :facet_sort
 
         def initialize
           @values = []

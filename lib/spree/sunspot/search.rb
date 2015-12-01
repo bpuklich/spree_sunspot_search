@@ -115,6 +115,10 @@ module Spree
           options = {}
           options[:limit] = filter.facet_limit if filter.facet_limit
           options[:sort] = filter.facet_sort if filter.facet_sort
+          if filter.facet_only
+            facet_only = filter.facet_only.call(self) || []
+            options[:only] = facet_only unless facet_only.empty?
+          end
           if filter.values.any? && filter.values.first.is_a?(Range)
             query.facet(filter.search_param, options) do
               filter.values.each do |value|
@@ -128,7 +132,7 @@ module Spree
               end
             end
           else
-            options[:exclude] = property_exclusion( filter.exclusion )
+            options[:exclude] = property_exclusion( filter.exclusion ) unless filter.exclusion.nil?
             query.facet(filter.search_param, options)
           end
           # Temporary hack to allow for geodistancing

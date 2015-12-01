@@ -14,6 +14,7 @@ module Spree
         attr_accessor :show_in_sidebar
         attr_accessor :facet_limit
         attr_accessor :facet_sort
+        attr_accessor :facet_only
 
         def initialize
           @values = []

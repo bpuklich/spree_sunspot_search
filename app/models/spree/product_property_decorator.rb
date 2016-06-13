@@ -5,7 +5,7 @@ module Spree
 
     private
     def reindex_product
-      ::Sunspot.index! product if product.persisted?
+      ::Sunspot.index! product if not product.nil? and product.persisted?
     end
   end
 end

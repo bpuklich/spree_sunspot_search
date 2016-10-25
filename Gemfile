@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
 
-gem 'spree', '~> 3.0.0'
+gem 'spree', '~> 3.1.0'
 
 gemspec
